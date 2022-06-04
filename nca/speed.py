@@ -73,8 +73,8 @@ setf = tk.LabelFrame(root, text="custom")
 setf.grid(row=3, column=0, padx=15, pady=5, sticky="E")
 randomB = tk.Button(setf, text="random filter", command=nca.set_rand_filter, padx=5, pady=8).grid(row=0, column=0, sticky="W", padx=5, pady=8, rowspan=3)
 active = tk.Label(setf, text="Activation function:").grid(row=0, column=1, pady=5, sticky="W")
-identB = tk.Radiobutton(setf, text="identity", variable=mode, value="1", command=setident).grid(row=1, column=1)
-absB = tk.Radiobutton(setf, text="absolute", variable=mode, value="2", command=setabs).grid(row=2, column=1)
+identB = tk.Radiobutton(setf, text="identity", variable=activ, value="1", command=setident).grid(row=1, column=1)
+absB = tk.Radiobutton(setf, text="absolute", variable=activ, value="2", command=setabs).grid(row=2, column=1)
 
 
 #record video

@@ -92,9 +92,9 @@ class Automata:
         maxrow = x.shape[0] - 1
         maxcol = x.shape[1] - 1
         target = np.zeros((3, 3), dtype=np.float64)
-        for channel in range(x.shape[4]):
-            for row in range(x[0]):
-                for column in range(x[1]):
+        for channel in range(x.shape[2]):
+            for row in range(x.shape[0]):
+                for column in range(x.shape[1]):
                     #target matrix extraction
                     if row == 0 or column == 0 or row == maxrow or column == maxcol:
                         for tr in range(3):
@@ -111,13 +111,14 @@ class Automata:
                                 if c > maxcol:
                                     c = 0
 
-                                target[tr, tc] = x[r, c, channel]
+                                target[tr, tc] = x[r, c, channel].copy()
                     else:
-                        target = x[row-1:row+2, column-1:column+2, channel]
+                        target = x[row-1:row+2, column-1:column+2, channel].copy()
                     #compute weights and biases and assign
                     w, c = self.regression(target)
                     self.filter_array[row, column, :, :, channel] = w
                     self.intercepts[row, column, channel] = c
+                print(f"row {row} channel {channel} done")
                     
     
 #testing

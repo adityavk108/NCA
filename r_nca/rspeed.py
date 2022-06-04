@@ -1,11 +1,11 @@
-from nca import Automata
+from rnca import Automata
 import cv2 as cv
 import numpy as np
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image
 from time import perf_counter
-
+import time
 record = False
 filename = ""
 
@@ -39,16 +39,15 @@ iframe.grid_forget()
 
 #UI- stats
 heading = tk.Label(root, text="R_NCA control panel v1").grid(row=0, column=0, pady=5, sticky="W")
-def setstats(avg, count, isrec):
+def setstats(avg, count, status):
     countfield.delete(0, tk.END)
     timefield.delete(0, tk.END)
     recordfield.delete(0, tk.END)
     timefield.insert(0, avg)
     countfield.insert(0, count)
-    if isrec:
-        recordfield.insert(0, "recording")
-    else:
-        recordfield.insert(0, "not recording")
+    recordfield.insert(0, status)
+    root.update()
+    
 def resetstats():
     global avg, count
     avg, count = 0, 0
@@ -85,6 +84,17 @@ rendtoggle1 = tk.Radiobutton(rends, text="off", variable=rendermode, value=0).gr
 rendtoggle2 = tk.Radiobutton(rends, text="on", variable=rendermode, value=1).grid(row=1, column=2, padx=8, pady=1, sticky="W")
 rendermode.set(0)
 
+
+#UI - compute
+def create_filter():
+    global avg, count
+    setstats(avg, count, "computing")
+    nca.compute_filters()
+
+apply = tk.LabelFrame(root, text="regression")
+apply.grid(row=2, column=1)
+regressB = tk.Button(apply, text="apply \n regression", padx=5, pady=8, command= lambda: create_filter()).grid(row=0, column=0, padx=8, pady=8)
+
 #UI- record
 def setrecord(x):
     global record
@@ -109,7 +119,7 @@ nca = Automata(np_image)
 
 #record video
 fps = 20
-video = cv.VideoWriter('render_rnca.avi',cv.VideoWriter_fourcc(*'DIVX'), fps, nca.canv_dimensions[0:2])
+video = cv.VideoWriter('render_rnca.avi',cv.VideoWriter_fourcc(*'DIVX'), fps, (nca.image.shape[0], nca.image.shape[1]))
 
 # s is scaling for image
 s = 10
@@ -139,7 +149,7 @@ while True:
         cv.imshow("Neural cellular automata", res)
 
         #print state
-        setstats(round(avg, 3), count, record)
+        setstats(round(avg, 3), count, "recording" if record else "not recording")
         count += 1
 
         #exit key
