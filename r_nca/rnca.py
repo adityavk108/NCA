@@ -4,25 +4,28 @@ from sklearn.linear_model import LinearRegression
 class Automata:
     def __init__(self, np_image):
 
-        self.starting_image = np_image
-        self.image = np_image[:, :, 0:3]
+        self.image = np_image[:, :, 0:3].astype(np.float64)
         self.canv_dimensions = np_image.shape[0:2]
 
-        self.filter_array = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3, 3, 3))
-        #(image rows, image columns, filter rows, filter columns, color channels)
-        self.intercepts = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3))
-        #(image rows, image columns, color channels)
-        
+        try:
+            self.filter_array = np.load("weights.npy")
+            #(image rows, image columns, filter rows, filter columns, color channels)
+            self.intercepts = np.load("intercepts.npy")
+            #(image rows, image columns, color channels)
+        except:
+            print("excepting filters to zero")
+            self.filter_array = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3, 3, 3), dtype=np.float64)
+            self.intercepts = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3), dtype=np.float64)
+        self.out = self.create_image()
 
     def update(self):
         self.convolve()
-        self.update_image()
-        return self.image
+        out = self.create_image()
+        return out
 
-    def update_image(self):
+    def create_image(self):
         #filler = np.zeros(self.canv_dimensions, dtype=np.float64)
-        #self.image = np.stack((self.R, self.G, self.B), axis=-1).astype(np.uint8)
-        pass
+        return (self.image).astype(np.uint8)
 
     
     #convolution
@@ -118,8 +121,17 @@ class Automata:
                     w, c = self.regression(target)
                     self.filter_array[row, column, :, :, channel] = w
                     self.intercepts[row, column, channel] = c
-                print(f"row {row} channel {channel} done")
-                    
+                print(f"row {row+1} channel {channel+1} done")
+    
+    def save_filters(self):
+        print("saved filters")
+        np.save("weights.npy", self.filter_array)
+        np.save("intercepts.npy", self.filter_array)
+
+    def zero_filters(self):
+        print("set filters to zero")
+        self.filter_array = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3, 3, 3), dtype=np.float64)
+        self.intercepts = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3), dtype=np.float64)
     
 #testing
 

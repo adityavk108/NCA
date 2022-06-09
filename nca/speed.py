@@ -1,4 +1,3 @@
-from random import random
 from nca import Automata
 import cv2 as cv
 import tkinter as tk
@@ -86,7 +85,10 @@ s=1.5
 #mainloop starts here
 lastrun = perf_counter()
 frame = nca.update()
-
+for i in range(frame.shape[0]):
+    print(frame[i, :, 1])
+print(frame.shape)
+print(frame.dtype)
 avg = 0
 prev = 1
 beta = 1 - (1 / 6) # change p in 1 - (1 / p) for precision  
