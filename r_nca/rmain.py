@@ -120,8 +120,9 @@ np_image = np.asarray(Image.open(filename))
 nca = Automata(np_image)
 
 #record video
-fps = 20
-video = cv.VideoWriter('render_rnca.avi',cv.VideoWriter_fourcc(*'DIVX'), fps, (nca.image.shape[0], nca.image.shape[1]))
+image = np_image[:, :, 0:3].astype(np.float64)
+video = [image]
+print(f"image: {image.shape}")
 
 # s is scaling for image
 s = 10
@@ -139,8 +140,10 @@ while True:
         if rendermode.get():
             time1 = perf_counter()
             frame = nca.update()
+            #record frame
             if record:
-                video.write(frame)
+                video.append(frame)
+                print(f"recorded {count}")
             time2 = perf_counter()
             #collect state data
             avg = beta * prev + (1 - beta) * (time2 - time1)
@@ -163,4 +166,6 @@ while True:
         print("excepted")
         break
 cv.destroyAllWindows()
-video.release()
+finalvid = np.stack(video, axis=-1)
+print(f"final video: {finalvid.shape}")
+np.save("video.npy", finalvid)
