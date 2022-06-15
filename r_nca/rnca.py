@@ -5,7 +5,10 @@ class Automata:
     def __init__(self, np_image):
 
         self.image = np_image[:, :, 0:3].astype(np.float64)
-        self.canv_dimensions = np_image.shape[0:2]
+        self.canvshape = np_image.shape[0:2]
+
+        self.anti_decay = 0.3431335897049337 #over 50 frames
+        self.convcount = 0
 
         try:
             self.filter_array = np.load("weights.npy")
@@ -14,17 +17,19 @@ class Automata:
             #(image rows, image columns, color channels)
         except:
             print("excepting filters to zero")
-            self.filter_array = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3, 3, 3), dtype=np.float64)
-            self.intercepts = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3), dtype=np.float64)
+            self.filter_array = np.zeros((self.canvshape[0], self.canvshape[1], 3, 3, 3), dtype=np.float64)
+            self.intercepts = np.zeros((self.canvshape[0], self.canvshape[1], 3), dtype=np.float64)
         self.out = self.create_image()
 
     def update(self):
         self.convolve()
+        if self.convcount % 50 == 0:
+            self.correct_decay()
         out = self.create_image()
         return out
 
     def create_image(self):
-        #filler = np.zeros(self.canv_dimensions, dtype=np.float64)
+        #filler = np.zeros(self.canvshape, dtype=np.float64)
         return (self.image).astype(np.uint8)
 
     
@@ -64,6 +69,7 @@ class Automata:
                     out = float(prod.sum())
                     new[i, j, channel] = out
         self.image = new
+        self.convcount += 1
 
     #REGRESSION
     """Computes the filter and bias for each pixel of the image across each channel"""
@@ -123,6 +129,7 @@ class Automata:
                     self.intercepts[row, column, channel] = c
                 print(f"row {row+1} channel {channel+1} done")
     
+    """Save and manipulate filters"""
     def save_filters(self):
         print("saved filters")
         np.save("weights.npy", self.filter_array)
@@ -130,8 +137,23 @@ class Automata:
 
     def zero_filters(self):
         print("set filters to zero")
-        self.filter_array = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3, 3, 3), dtype=np.float64)
-        self.intercepts = np.zeros((self.canv_dimensions[0], self.canv_dimensions[1], 3), dtype=np.float64)
+        self.filter_array = np.zeros((self.canvshape[0], self.canvshape[1], 3, 3, 3), dtype=np.float64)
+        self.intercepts = np.zeros((self.canvshape[0], self.canvshape[1], 3), dtype=np.float64)
+
+    """add noise"""
+    def intnoise(self):
+        shape = self.canvshape
+        clow, chigh = 0.45, 0.55
+        rlow, rhigh = 0.45, 0.55
+        slice = self.image[int(shape[0] * rlow):int(shape[0] * rhigh), int(shape[1] * clow):int(shape[1] * chigh), :].copy()
+        x = np.random.randint(2, size=slice.shape).astype("float64") * 200
+        self.image[int(shape[0] * rlow):int(shape[0] * rhigh), int(shape[1] * clow):int(shape[1] * chigh), :] = slice + x
+        print("noise added")
+
+    """correct decay from convolution"""
+    def correct_decay(self):
+        self.image = self.image + self.anti_decay
+        print("corrected for decay")
     
 #testing
 

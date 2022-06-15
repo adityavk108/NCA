@@ -1,3 +1,4 @@
+from re import A
 from rnca import Automata
 import cv2 as cv
 import numpy as np
@@ -115,6 +116,16 @@ scaler = tk.Scale(records, from_=1, to=30, orient=tk.HORIZONTAL)
 scaler.grid(row=4, column=0)
 scaler.set(10)
 
+#UI- Noise
+def dointnoise():
+    global frame
+    nca.intnoise()
+    frame = nca.create_image()
+
+noisy = tk.LabelFrame(root, text="add noise")
+noisy.grid(row=3, column=0)
+intnoiseB = tk.Button(noisy, text="intnoise", padx=5, pady=8, command= lambda: dointnoise()).grid(row=0, column=0, padx=5, pady=8)
+
 #nca inst
 np_image = np.asarray(Image.open(filename))
 nca = Automata(np_image)
@@ -133,7 +144,7 @@ frame = nca.create_image()
 avg = 0
 prev = 1
 beta = 1 - (1 / 6) # change p in 1 - (1 / p) for precision  
-count = 1
+count = 0
 while True:
     try:
         #update image
@@ -147,6 +158,7 @@ while True:
             time2 = perf_counter()
             #collect state data
             avg = beta * prev + (1 - beta) * (time2 - time1)
+            count += 1
 
         #display image
         s = scaler.get() / 10
@@ -155,11 +167,8 @@ while True:
 
         #print state
         setstats(round(avg, 3), count, "recording" if record else "not recording")
-        count += 1
 
         #exit key
-        if cv.waitKey(10) & 0xFF == ord('q'):
-            break
         root.update()
 
     except:

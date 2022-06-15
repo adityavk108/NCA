@@ -63,17 +63,17 @@ videobar.set(1)
 def setscale():
     global s
     s = scaler.get() / 10
-scaler = tk.Scale(frame, from_=1, to=30, orient=tk.HORIZONTAL, length=60)
-scaler.grid(row=2, column=4)
+scaler = tk.Scale(frame, from_=1, to=30, orient=tk.HORIZONTAL, length=120)
+scaler.grid(row=2, column=2)
 scaler.set(10)
 
 def fpsup():
     global fps
-    fps += 3
+    fps += 4
 def fpsdown():
     global fps
-    if fps > 4:
-        fps -= 3
+    if fps > 5:
+        fps -= 4
 fpsset = tk.LabelFrame(frame)
 fpsset.grid(row=1, column=2)
 fpupB = tk.Button(fpsset, text="↑", command=fpsup).grid(row=0, column=0)
@@ -85,7 +85,7 @@ fpsdisp.grid(row=1, column=1)
 
 play = False
 move = True
-fps = 15
+fps = 25
 framecount = 0
 prev = perf_counter()
 diff = 0
@@ -106,7 +106,10 @@ while True:
     diff = perf_counter() - prev
     frametime = 1/ fps
     #video fetching
-    vidframe = video[:, :, :, framecount]
+    try:
+        vidframe = video[:, :, :, framecount].astype(np.uint8)
+    except IndexError:
+        framecount = 1
     #video display:
     s = scaler.get() / 10
     res = cv.resize(vidframe, (int(vidframe.shape[1] * s), int(vidframe.shape[0] * s)), interpolation=cv.INTER_AREA)
