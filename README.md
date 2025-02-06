@@ -12,14 +12,13 @@ The idea of using the concept of convolution to implement a Cellular Automata fa
 ![waves2](https://github.com/user-attachments/assets/e903a60a-6381-46cf-bfc8-07a0c3d346f8)
 
 
----
 
 ## What is Cellular Automata?
 Cellular Automata (CA) are mathematical models that consist of a grid of cells, where each cell may hold a value (classically a 0 or 1). In every update, a set of simples rules are applied to each cell determine it's next state, usually involving the state 
 of it's neighbours. These simple rules can give rise to incredibly complex behaviors, such as:
-- [Conway’s Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life), a famous mathematical model with simple rules giving rise to complex life-like patterns
-- [Wolfram's rule 30](https://en.wikipedia.org/wiki/Rule_30), another famous CA mimicking natural patterns from simple rules
-- Simulations of natural phenomena like fire, waves, and patterns in animal skins, used in biological and chemical modeling
+- [Conway’s Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life), a famous mathematical model with simple rules giving rise to complex life-like patterns.
+- [Wolfram's rule 30](https://en.wikipedia.org/wiki/Rule_30), another famous CA mimicking natural patterns from simple rules.
+- Simulations of natural phenomena like fire, waves, and patterns in animal skins, used in biological and chemical modeling.
 
 CA have been widely studied in physics, artificial life, and even cryptography due to their ability to model highly complex systems with local interactions.
 

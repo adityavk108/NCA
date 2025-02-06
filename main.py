@@ -134,7 +134,7 @@ def exit_app():
     video.release()
     exit()
 
-
+#help and exit buttons
 exit_frame = tk.Frame(root)
 exit_frame.grid(row=3, column=1)
 
